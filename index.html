@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>ColorSpend — Expense Tracker</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>💰</text></svg>" />
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+  <!-- ===== LOGIN SCREEN ===== -->
+  <div id="loginScreen" class="login-screen">
+    <div class="login-card">
+      <div class="login-logo">💸</div>
+      <h1>ColorSpend</h1>
+      <p class="login-sub">Track your expenses, beautifully.</p>
+      <button id="googleLoginBtn" class="btn-google">
+        <svg width="20" height="20" viewBox="0 0 48 48">
+          <path fill="#FFC107" d="M43.611,20.083H42V20H24v8h11.303c-1.649,4.657-6.08,8-11.303,8c-6.627,0-12-5.373-12-12s5.373-12,12-12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C12.955,4,4,12.955,4,24s8.955,20,20,20s20-8.955,20-20C44,22.659,43.862,21.35,43.611,20.083z"/>
+          <path fill="#FF3D00" d="M6.306,14.691l6.571,4.819C14.655,15.108,18.961,12,24,12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C16.318,4,9.656,8.337,6.306,14.691z"/>
+          <path fill="#4CAF50" d="M24,44c5.166,0,9.86-1.977,13.409-5.192l-6.19-5.238C29.211,35.091,26.715,36,24,36c-5.202,0-9.619-3.317-11.283-7.946l-6.522,5.025C9.505,39.556,16.227,44,24,44z"/>
+          <path fill="#1976D2" d="M43.611,20.083H42V20H24v8h11.303c-0.792,2.237-2.231,4.166-4.087,5.571c0.001-0.001,0.002-0.001,0.003-0.002l6.19,5.238C36.971,39.205,44,34,44,24C44,22.659,43.862,21.35,43.611,20.083z"/>
+        </svg>
+        Sign in with Google
+      </button>
+      <p class="login-footer">Your data is private and tied to your account.</p>
+    </div>
+  </div>
+
+  <!-- ===== APP SHELL ===== -->
+  <div id="appShell" class="app-shell hidden">
+    <header class="topbar">
+      <div class="brand">
+        <span class="brand-logo">💸</span>
+        <span class="brand-name">ColorSpend</span>
+      </div>
+      <div class="user-box">
+        <img id="userPhoto" class="user-photo" src="" alt="user" />
+        <span id="userName" class="user-name"></span>
+        <button id="logoutBtn" class="btn-logout">Logout</button>
+      </div>
+    </header>
+
+    <main class="main-grid">
+
+      <!-- Add Expense Card -->
+      <section class="card add-expense-card">
+        <h2>➕ Add Expense</h2>
+        <form id="expenseForm" class="expense-form">
+          <div class="field">
+            <label>Amount (₹)</label>
+            <input type="number" id="amount" step="0.01" min="0.01" placeholder="0.00" required />
+          </div>
+          <div class="field">
+            <label>Category</label>
+            <select id="category" required>
+              <option value="Food">🍔 Food</option>
+              <option value="Travel">🚗 Travel</option>
+              <option value="Shopping">🛍️ Shopping</option>
+              <option value="Bills">💡 Bills</option>
+              <option value="Health">💊 Health</option>
+              <option value="Entertainment">🎬 Entertainment</option>
+              <option value="Education">📚 Education</option>
+              <option value="Other">📦 Other</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Date</label>
+            <input type="date" id="date" required />
+          </div>
+          <div class="field field-wide">
+            <label>Note</label>
+            <input type="text" id="note" placeholder="Optional note..." />
+          </div>
+          <button type="submit" class="btn-add">Add Expense</button>
+        </form>
+      </section>
+
+      <!-- Stats -->
+      <section class="stats-row">
+        <div class="stat-card stat-today">
+          <div class="stat-label">Today</div>
+          <div class="stat-value" id="statToday">₹0</div>
+        </div>
+        <div class="stat-card stat-week">
+          <div class="stat-label">This Week</div>
+          <div class="stat-value" id="statWeek">₹0</div>
+        </div>
+        <div class="stat-card stat-month">
+          <div class="stat-label">This Month</div>
+          <div class="stat-value" id="statMonth">₹0</div>
+        </div>
+        <div class="stat-card stat-total">
+          <div class="stat-label">All Time</div>
+          <div class="stat-value" id="statTotal">₹0</div>
+        </div>
+      </section>
+
+      <!-- Charts -->
+      <section class="card chart-card">
+        <div class="chart-header">
+          <h2>📊 Spending Trend</h2>
+          <div class="chart-toggle" id="trendToggle">
+            <button class="toggle-btn active" data-range="day">Day</button>
+            <button class="toggle-btn" data-range="week">Week</button>
+            <button class="toggle-btn" data-range="month">Month</button>
+          </div>
+        </div>
+        <canvas id="trendChart" height="110"></canvas>
+      </section>
+
+      <section class="card chart-card">
+        <h2>🥧 Category Breakdown</h2>
+        <canvas id="categoryChart" height="110"></canvas>
+      </section>
+
+      <!-- Expense List -->
+      <section class="card list-card">
+        <div class="list-header">
+          <h2>🧾 Recent Expenses</h2>
+          <select id="filterCategory">
+            <option value="all">All Categories</option>
+            <option value="Food">🍔 Food</option>
+            <option value="Travel">🚗 Travel</option>
+            <option value="Shopping">🛍️ Shopping</option>
+            <option value="Bills">💡 Bills</option>
+            <option value="Health">💊 Health</option>
+            <option value="Entertainment">🎬 Entertainment</option>
+            <option value="Education">📚 Education</option>
+            <option value="Other">📦 Other</option>
+          </select>
+        </div>
+        <div id="expenseList" class="expense-list">
+          <p class="empty-state" id="emptyState">No expenses yet. Add your first one above! 🎉</p>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <div id="toast" class="toast"></div>
+
+  <!-- Firebase compat SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+
+  <script src="firebase-config.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
